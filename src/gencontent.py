@@ -1,7 +1,7 @@
 from markdown_blocks import markdown_to_html_node
 import os
 from pathlib import Path
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f" * {from_path} {template_path} -> {dest_path}")
     from_file = open(from_path, "r")
     markdown_content = from_file.read()
@@ -17,6 +17,10 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(markdown_content)
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", html)
+
+    template = template.replace('href="/', f'href="{basepath}')
+    template = template.replace('src="/', f'src="{basepath}')
+
 
     dest_dir_path = os.path.dirname(dest_path)
     if dest_dir_path != "":
@@ -35,7 +39,7 @@ def extract_title(md):
 
 
 
-def generate_pages_recursive(content_dir, template_path, destination_dir):
+def generate_pages_recursive(content_dir, template_path, destination_dir, basepath):
     # Convert strings to Path objects if they aren't already
     content_root = Path(content_dir)
     dest_root = Path(destination_dir)
@@ -50,9 +54,9 @@ def generate_pages_recursive(content_dir, template_path, destination_dir):
 
         if entry.is_dir():
             dest_path.mkdir(parents=True, exist_ok=True)
-            generate_pages_recursive(entry, template_path, dest_path)
+            generate_pages_recursive(entry, template_path, dest_path, basepath)
             
         elif entry.suffix == ".md":
             # with_suffix specifically changes the extension only
             html_dest = dest_path.with_suffix(".html")
-            generate_page(str(entry), str(template_path), str(html_dest))
+            generate_page(str(entry), str(template_path), str(html_dest), basepath)
