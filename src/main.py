@@ -16,5 +16,6 @@ def main():
     copy_directory_recursive("static", "public")
     #generate_page("content/index.md", "template.html", "public/index.html")
     #generate_pages_recursive("content", "template.html", "public") 
+    print("basepath=", basepath)
     generate_pages_recursive("content", "template.html", "docs", basepath)   
 main()
